@@ -1,0 +1,30 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div class="container">
+    <h2>{{user.username}}'s Follows Page</h2>
+    {% for post in posts %}
+    <div class="post" id='post/{{post.id}}'>
+        <h5>{{post.text}}</h5>
+        <p>{{post.time}}</p>
+        <p id="like-count-{{post.id}}">{{post.like.count}}</p>
+        <a href="{% url 'user_page' post.publisher.username %}">{{ post.publisher.username }}</a>
+        {% if user in post.like.all%}
+            <button type="button" class="btn btn-light" onclick="like('{{post.id}}')">
+            <div id="like-button-{{post.id}}">&#128150;</div>
+            </button> 
+            {% else %}
+            <button type="button" class="btn btn-light" id="like-button-{{post.id}}" onclick="like('{{post.id}}')" >
+            <div id="like-button-{{post.id}}">&#129293;</div>
+            </button> 
+            {% endif %}
+            <a href="{% url 'comment' post.id %}"><button type="button" class="btn btn-light" id="comment-btn{{post.id}}" onclick="">Comment</button></a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock%}
+
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
+{% endblock %}

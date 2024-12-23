@@ -1,0 +1,65 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+    
+    <div class="container">
+        {% if user %}
+        <form action="{% url 'create' %}" method="post">
+            {% csrf_token %}
+            {{form}}
+            <button type="submit" class="btn btn-light">Submit</button>
+        </form>
+        {% endif %}
+
+        {% for post in page_obj %}
+        <div class="post" id='post-{{post.id}}'>
+            <h5 id="post-text-{{post.id}}">{{post.text}}</h5>
+            <p>{{post.time}}</p>
+            <p id="like-count-{{post.id}}">{{post.like.count}}</p>
+            <a href="{% url 'user_page' post.publisher.username %}">{{ post.publisher.username }}</a>
+            {% if user in post.like.all%}
+            <button type="button" class="btn btn-light" onclick="like('{{post.id}}')">
+            <div id="like-button-{{post.id}}">&#128150;</div>
+            </button> 
+            {% else %}
+            <button type="button" class="btn btn-light" onclick="like('{{post.id}}')" >
+            <div id="like-button-{{post.id}}">&#129293;</div>
+            </button> 
+            {% endif %}
+            {% if user and user.username == post.publisher.username %}
+                <button type="button" class="btn btn-light" id="edit-btn-{{post.id}}" onclick="edit('{{post.id}}')">Edit</button>
+            {% endif %}
+            <a href="{% url 'comment' post.id %}"><button type="button" class="btn btn-light" id="comment-btn{{post.id}}" onclick="">Comment</button></a>
+        </div>
+        {% endfor %}
+        <nav aria-label="...">
+            <ul class="pagination">
+    
+                <li class="{%if not page_obj.has_previous%}page-item disabled{%else%}page-item{%endif%}">
+                    <a class="page-link" href="?page={%if page_obj.has_previous%}{{page_obj.previous_page_number}}{%endif%} ">Previous</a>
+                </li>
+                
+                {% for page_number in all_pages %}
+                    {% if page_number == page_obj.number %}
+                    <li class="page-item active" aria-current="page">
+                        <span class="page-link">{{ page_obj.number}}</span>
+                    </li>
+                    {%elif page_number != page_obj.paginator.ELLIPSIS %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a></li>
+                    {%endif%}
+                {% endfor %}
+    
+                <li class="{%if not page_obj.has_next%}page-item disabled{%else%}page-item{%endif%}">
+                    <a class="page-link" href="?page={%if page_obj.has_next%}{{page_obj.next_page_number}}{%endif%} ">Next</a>
+                </li>
+    
+            </ul>
+          </nav>
+    </div>
+  
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div class="container">
+    <h2>{{page_user.username}}'s Page</h2>
+    <h3>Follow:{{follow.follow.count}}</h3>
+    <h3>Follower:<div id="follow-count-{{page_user.username}}" >{{follow.follower.count}}</div></h3>
+    {% if user != page_user %}
+        {% if user in follow.follower.all %}
+            <button type="button" class="btn btn-light" onclick="follow('{{page_user.username}}')" >
+                <div id="follow-button-{{page_user.username}}">UnFollow</div>
+            </button>
+        {% else %} 
+            <button type="button" class="btn btn-light" onclick="follow('{{page_user.username}}')" >
+                <div id="follow-button-{{page_user.username}}">Follow</div>
+            </button>
+        {% endif %}
+    {%endif%}
+    {% for post in posts %}
+    <div class="post" id='post-{{post.id}}'>
+        <h5 id="post-text-{{post.id}}">{{post.text}}</h5>
+        <p>{{post.time}}</p>
+        <p id="like-count-{{post.id}}">{{post.like.count}}</p>
+        <a href="{% url 'user_page' post.publisher.username %}">{{ post.publisher.username }}</a>
+        {% if user in post.like.all%}
+        <button type="button" class="btn btn-light" onclick="like('{{post.id}}')">
+        <div id="like-button-{{post.id}}">&#128150;</div>
+        </button> 
+        {% else %}
+        <button type="button" class="btn btn-light" onclick="like('{{post.id}}')" >
+        <div id="like-button-{{post.id}}">&#129293;</div>
+        </button> 
+        {% endif %}
+        {% if user and user.username == post.publisher.username %}
+            <button type="button" class="btn btn-light" id="edit-btn-{{post.id}}" onclick="edit('{{post.id}}')">Edit</button>
+        {% endif %}
+        <a href="{% url 'comment' post.id %}"><button type="button" class="btn btn-light" id="comment-btn{{post.id}}" onclick="">Comment</button></a>
+    </div>
+    {% endfor %}
+{% endblock%}
+
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
+{% endblock %}

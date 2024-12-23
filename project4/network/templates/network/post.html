@@ -1,0 +1,39 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div class="container">
+    <div class="post" id='post-{{post.id}}'>
+        <h5 id="post-text-{{post.id}}">{{post.text}}</h5>
+        <p>{{post.time}}</p>
+        <p id="like-count-{{post.id}}">{{post.like.count}}</p>
+        <a href="{% url 'user_page' post.publisher.username %}">{{ post.publisher.username }}</a>
+        {% if user in post.like.all%}
+        <button type="button" class="btn btn-light" onclick="like('{{post.id}}')">
+        <div id="like-button-{{post.id}}">&#128150;</div>
+        </button> 
+        {% else %}
+        <button type="button" class="btn btn-light" onclick="like('{{post.id}}')" >
+        <div id="like-button-{{post.id}}">&#129293;</div>
+        </button> 
+        {% endif %}
+        {% if user and user.username == post.publisher.username %}
+            <button type="button" class="btn btn-light" id="edit-btn-{{post.id}}" onclick="edit('{{post.id}}')">Edit</button>
+        {% endif %}
+    </div>
+    <br>
+    <textarea id="txtArea-{{post.id}}"></textarea>
+    <button type="button" class="btn btn-light" id="add-comment-{{post.id}}" onclick="add_comment('{{post.id}}')">Send</button>
+    <div id="comments">
+    {% for comment in comments%}
+        <div class="post">
+            <p>{{comment.comment}}</p>
+            <h6>{{comment.owner}} </h6>
+        </div>
+    {% endfor%}
+    </div>
+{% endblock%}
+
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
+{% endblock %}
